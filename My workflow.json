@@ -1,0 +1,219 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8,
+              "triggerAtMinute": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1488,
+        -592
+      ],
+      "id": "d38d9b00-9ccf-42c5-9eef-10b9b30a7ac5",
+      "name": "Déclencheur quotidien (8h)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jours = [\"Dimanche\", \"Lundi\", \"Mardi\", \"Mercredi\", \"Jeudi\", \"Vendredi\", \"Samedi\"];\nconst aujourdhui = jours[new Date().getDay()];\n\nreturn [{ json: { jour: aujourdhui } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1264,
+        -592
+      ],
+      "id": "21010d5b-8741-4cdc-bdc1-67b133e42be2",
+      "name": "Calculer le jour actuel"
+    },
+    {
+      "parameters": {
+        "resource": "boardItem",
+        "operation": "getAll",
+        "boardId": "5104980345",
+        "groupId": "topics",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.mondayCom",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        -592
+      ],
+      "id": "d741041f-4bd3-4dde-98f5-42821c35adf3",
+      "name": "Récupérer tâches existantes dans TODO",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mondayComApi": {
+          "id": "mPnporoAWYUCwLpn",
+          "name": "Monday.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "boardItem",
+        "operation": "getByColumnValue",
+        "boardId": "5104980579",
+        "columnId": "name",
+        "columnValue": "={{ $('Calculer le jour actuel').item.json.jour }}"
+      },
+      "type": "n8n-nodes-base.mondayCom",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -592
+      ],
+      "id": "72b4b259-0b85-4db6-8b5e-fc1352020eed",
+      "name": "Récupérer tâche du jour (Template)",
+      "credentials": {
+        "mondayComApi": {
+          "id": "mPnporoAWYUCwLpn",
+          "name": "Monday.com account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "344f8a81-be7b-40bc-867c-7d9dc16a438e",
+              "leftValue": "={{ $('Récupérer tâches existantes dans TODO').all().some(item => item.json.name === $json.column_values[0].text) }}",
+              "rightValue": "={{ $('Récupérer tâches existantes dans TODO').all().map(item => item.json.name).includes($json.column_values[0].text) }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -576,
+        -592
+      ],
+      "id": "dec71676-aaae-4c6c-a594-dffc89ac8353",
+      "name": "Vérifier si tâche déjà présente"
+    },
+    {
+      "parameters": {
+        "resource": "boardItem",
+        "boardId": "5104980345",
+        "groupId": "topics",
+        "name": "=   {{ $json.column_values[0].text }}",
+        "additionalFields": {
+          "columnValues": "={\"status\": {\"label\": \"En cours\"}}"
+        }
+      },
+      "type": "n8n-nodes-base.mondayCom",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        -592
+      ],
+      "id": "37ce394d-a949-4c8d-9f50-dd9ee9d2e861",
+      "name": "Créer tâche dans TODO",
+      "credentials": {
+        "mondayComApi": {
+          "id": "mPnporoAWYUCwLpn",
+          "name": "Monday.com account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Déclencheur quotidien (8h)": {
+      "main": [
+        [
+          {
+            "node": "Calculer le jour actuel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculer le jour actuel": {
+      "main": [
+        [
+          {
+            "node": "Récupérer tâches existantes dans TODO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Récupérer tâches existantes dans TODO": {
+      "main": [
+        [
+          {
+            "node": "Récupérer tâche du jour (Template)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Récupérer tâche du jour (Template)": {
+      "main": [
+        [
+          {
+            "node": "Vérifier si tâche déjà présente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier si tâche déjà présente": {
+      "main": [
+        [
+          {
+            "node": "Créer tâche dans TODO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "vlWQCBAH0VhgRGQP",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "0f3f6c43-4bc2-4058-9e1b-533371f7f17b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "199bf054b08b0e4ab3516f5f08ff3701b88e167094e46626f3fe1bee8dd0df31"
+  },
+  "nodeGroups": [],
+  "id": "RuQLdL8XWqZo3yUT",
+  "tags": []
+}

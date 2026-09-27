@@ -1,0 +1,68 @@
+{
+  "name": "Notification erreur - Ethanolle",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a03d6683-9cee-4086-9db2-fe7200ce3caa",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "fromEmail": "admin@example.com",
+        "toEmail": "henintsoaandrianina290@gmail.com",
+        "subject": "⚠️ Erreur - Workflow monday.com/n8n",
+        "emailFormat": "text",
+        "text": "=Le workflow \"{{ $json.workflow.name }}\" a échoué.\n\nErreur : {{ $json.error.message }}\nNœud en échec : {{ $json.lastNodeExecuted }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "ec979979-e3e5-4083-b3da-570c79b8de5e",
+      "name": "Send an Email",
+      "webhookId": "d04afa3a-93bf-42fa-8c08-88024d9960ab",
+      "credentials": {
+        "smtp": {
+          "id": "IBfyTwt6NBDhJHAd",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d1f22e95-d3bb-4544-8151-ccd97bd6eee7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "199bf054b08b0e4ab3516f5f08ff3701b88e167094e46626f3fe1bee8dd0df31"
+  },
+  "nodeGroups": [],
+  "id": "vlWQCBAH0VhgRGQP",
+  "tags": []
+}
