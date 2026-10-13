@@ -1,4 +1,4 @@
-# Automatisation monday.com + n8n — Exercice Ethanolle
+# Automatisation monday.com + n8n
 
 Automatisation qui crée chaque jour, dans un tableau **TODO** monday.com, la tâche correspondant au jour de la semaine actuel, à partir d'un tableau **Template de tâches**. Le système évite les doublons et notifie par email en cas d'échec.
 
